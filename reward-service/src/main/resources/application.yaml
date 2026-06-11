@@ -1,0 +1,25 @@
+#spring.application.name=reward-service
+
+
+server:
+  port: 8084
+
+spring:
+  application:
+    name: reward-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: reward-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.use.type.headers: false
+      spring.json.trusted.packages: "com.paypal.reward_service.entity"
+      spring.json.value.default.type: com.paypal.reward_service.entity.Transaction
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
