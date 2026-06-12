@@ -28,16 +28,27 @@ public class RewardConsumer {
 
         log.info("Reward service listening");
 
-        Reward r1= new Reward();
-        r1.setSentAt(LocalDateTime.now());
-        r1.setUserId(transaction.getSenderId());
-        r1.setTransactionId(transaction.getId());
-        r1.setPoints(10.0);
+        try{
+            if(rewardRepository.existsByTransactionId(transaction.getId())){
+                log.info("Reward already exists for transaction: {}",transaction.getId());
+                return;
+            }
+            Reward r1= new Reward();
+            r1.setUserId(transaction.getSenderId());
+            r1.setTransactionId(transaction.getId());
+            r1.setPoints(transaction.getAmount()*100);
+            log.info("Reward created: {}",r1);
+            rewardRepository.save(r1);
+            log.info("Reward saved {}",r1);
+        } catch (Exception e) {
+            log.error("Failed to process transaction : {} : {}",transaction.getId(),e.getMessage());
+            throw new RuntimeException(e);
+        }
 
-        log.info("Reward created: {}",r1);
 
-        rewardRepository.save(r1);
-        log.info("Reward saved {}",r1);
+
+
+
 
     }
 
