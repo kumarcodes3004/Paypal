@@ -28,7 +28,7 @@ public class JwtUtil {
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
-                .getBody();
+                .getPayload();
 
         //basically token is like inside a envelope locked with a key
         //that contains details like user id etc and signing key is required to open that

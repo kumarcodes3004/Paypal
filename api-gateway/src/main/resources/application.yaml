@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-  name: api-gateway
+    name: api-gateway
 
   cloud:
     gateway:
@@ -12,10 +12,15 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       routes:
         #user micro srevice
-        - id: user-service
+        - id: auth-route
           uri: http://localhost:8081
           predicates:
             - Path=/api/auth/**
+
+        - id: user-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/user-service/**
 
         #transaction-microservice
         - id: transaction-service
@@ -30,11 +35,14 @@ spring:
             - Path=/api/reward/**
 
         #notification-microservice
-        - id: transaction-service
+        - id: notification-service
           uri: http://localhost:8083
           predicates:
             - Path=/api/notify/**
-
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
 
 
 
