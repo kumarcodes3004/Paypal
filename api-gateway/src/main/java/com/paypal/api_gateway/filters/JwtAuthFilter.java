@@ -25,10 +25,8 @@ public  class JwtAuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain){
-        System.out.println("=== FILTER ENTERED for path: " + exchange.getRequest().getPath());
         String path = exchange.getRequest().getPath().value();
         String normalizedPath =path.replaceAll("/+$","");
-        System.out.println("Normalized apth:" + normalizedPath);
 
         //skipping filter for public paths
         if(PUBLIC_PATHS.contains(normalizedPath)){
@@ -65,6 +63,8 @@ public  class JwtAuthFilter implements GlobalFilter, Ordered {
             // Add user email to headers for downstream services
             exchange.getRequest().mutate()
                     .header("X-User-Email", claims.getSubject())
+                    .header("X-User-Id", claims.get("userId", String.class))
+                    .header("X-User-Role", claims.get("role", String.class))
                     .build();
             System.out.println("➡️ Added X-User-Email header to request: " + claims.getSubject());
 

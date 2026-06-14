@@ -16,33 +16,77 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/auth/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+#                how fast tokens are added back to the rate limiter , 10 tokens/sec
+                redis-rate-limiter.replenishRate: 10
+#                maximum number of token the bucket can hold ,
+#                 means at max bucket can have 20tokens means 20 req at once it can handle
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
 
         - id: user-service
           uri: http://localhost:8081
           predicates:
             - Path=/api/user-service/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
 
         #transaction-microservice
         - id: transaction-service
           uri: http://localhost:8082
           predicates:
             - Path=/api/transactions/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
 
         #reward-microservice
         - id: reward-service
           uri: http://localhost:8084
           predicates:
             - Path=/api/reward/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
 
         #notification-microservice
         - id: notification-service
           uri: http://localhost:8083
           predicates:
             - Path=/api/notify/**
-logging:
-  level:
-    org.springframework.cloud.gateway: TRACE
-    reactor.netty.http.client: DEBUG
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+
+#    sets maximum allowed length , we are protecting against huge paylaod and malformed req
+    httpclient:
+      max-intital-length: 4096
+      max-header-size: 8192
+    filters:
+      - name: RequestSize
+        args:
+#   no request should be more than 1MB
+          maxSize: 1MB
 
 
 
