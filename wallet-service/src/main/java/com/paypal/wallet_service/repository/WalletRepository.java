@@ -1,0 +1,17 @@
+package com.paypal.wallet_service.repository;
+
+import com.paypal.wallet_service.entity.Wallet;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+
+import java.util.Optional;
+
+public interface WalletRepository extends JpaRepository<Wallet,Long> {
+
+    Optional<Wallet> findByUserId(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Wallet> findByUserIdAndCurrency(Long id,String currency);
+
+}
