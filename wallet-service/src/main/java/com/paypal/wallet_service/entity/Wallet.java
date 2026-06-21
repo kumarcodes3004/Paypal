@@ -2,6 +2,7 @@ package com.paypal.wallet_service.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "wallet")
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Wallet {
 
 
@@ -34,4 +36,14 @@ public class Wallet {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+
+    public Wallet(Long userId, String currency) {
+        this.userId = userId;
+        this.currency = currency;
+        this.balance = 0L;
+        this.availableBalance = 0L;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
