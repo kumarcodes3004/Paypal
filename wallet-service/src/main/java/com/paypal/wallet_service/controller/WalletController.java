@@ -41,13 +41,13 @@ public class WalletController {
     }
 
     @PostMapping("/hold")
-    public ResponseEntity<HoldResponse> credit(@RequestBody HoldRequest request) {
+    public ResponseEntity<HoldResponse> hold(@RequestBody HoldRequest request) {
 
         return ResponseEntity.ok(walletService.placeHold(request));
     }
 
     @PostMapping("/capture")
-    public ResponseEntity<WalletResponse> credit(@RequestBody CaptureRequest request) {
+    public ResponseEntity<WalletResponse> capture(@RequestBody CaptureRequest request) {
 
         return ResponseEntity.ok(walletService.captureHold(request));
     }

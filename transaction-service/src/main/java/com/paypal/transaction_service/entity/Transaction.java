@@ -20,14 +20,14 @@ public class Transaction {
     private Long id;
 
     @Column(name = "sender_user_id", nullable = false)
-    private String senderId;
+    private Long senderId;
 
     @Column(name = "reciever_user_id", nullable = false)
-    private String recieverId;
+    private Long recieverId;
 
     @Column(nullable = false)
     @Positive(message = "Amount must be positive")
-    private Double amount;
+    private Long amount;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
