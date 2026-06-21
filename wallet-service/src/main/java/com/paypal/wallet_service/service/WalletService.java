@@ -59,11 +59,6 @@ public class WalletService {
 
     }
 
-
-    public void releaseHold(String ref) {
-
-    }
-
     @Transactional
     public WalletResponse debit(DebitRequest request) {
 
@@ -124,9 +119,54 @@ public class WalletService {
         walletHoldRepository.save(hold);
 
         return new HoldResponse(hold.getHoldReference(),hold.getAmount(),hold.getStatus());
+    }
 
 
+    //capture hold is basically if the transaction is successful this much amount will be detected permanently from wallet
+    //means deduct from balance
+    @Transactional
+    public WalletResponse captureHold(CaptureRequest request){
+
+        WalletHold hold = walletHoldRepository.findByWalletHoldReference(request.getHoldReference())
+                .orElseThrow(()-> new NotFoundException("Wallet not found for reference Id"+request.getHoldReference()));
+
+
+        if(!"ACTIVE".equals(hold.getStatus())){
+            throw  new IllegalStateException("Hold is not Active");
+        }
+
+        Wallet wallet = hold.getWallet();
+        wallet.setBalance(wallet.getBalance()- hold.getAmount());
+        hold.setStatus("CAPTURED");
+
+        return new WalletResponse(wallet.getId(), wallet.getUserId(), wallet.getCurrency(), wallet.getBalance(), wallet.getAvailableBalance());
 
     }
+
+
+    @Transactional
+    public HoldResponse releaseHold(String holdRefernece) {
+
+        //1. Find wallet
+        WalletHold hold = walletHoldRepository.findByWalletHoldReference(holdRefernece)
+                .orElseThrow(()-> new NotFoundException("Wallet not found for reference Id"+holdRefernece));
+
+
+
+        if(!"ACTIVE".equals(hold.getStatus())){
+            throw  new IllegalStateException("Hold is not Active");
+        }
+
+        Wallet wallet = hold.getWallet();
+        wallet.setAvailableBalance(wallet.getAvailableBalance()+ hold.getAmount());
+        hold.setStatus("RELEASED");
+
+        walletRepository.save(wallet);
+        walletHoldRepository.save(hold);
+
+        return new HoldResponse(hold.getHoldReference(),hold.getAmount(),hold.getStatus());
+    }
+
+
 
 }
